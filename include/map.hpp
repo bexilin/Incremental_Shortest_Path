@@ -74,7 +74,11 @@ public:
     // read map from file
     Map(std::string filename);
     
+    void print_vertices();
+
     void print_edges();
+
+    void save_map(std::string filename);
     
     void update_price();
     
