@@ -1,4 +1,7 @@
 // Author: Xi Lin
+#ifndef MAP_H
+#define MAP_H
+
 #include <string>
 #include <unordered_map>
 #include <vector>
@@ -6,6 +9,7 @@
 #include <fstream>
 #include <sstream>
 #include <iostream>
+#include <limits>
 
 struct PointCloud{
     struct Point
@@ -41,30 +45,27 @@ protected:
     // class that store destination and price range of a path
     class Node{
     private:
-        uint32_t goal;
         std::mt19937 gen;
         std::uniform_real_distribution<float> dis;
         float low, high, curr;
     public:
-        Node(): goal(-1), low(-1), high(-1), curr(-1) {};
-        Node(uint32_t g, float l, float h, uint32_t seed): goal(g), 
-                                                            gen(std::mt19937(seed)),
-                                                            dis(std::uniform_real_distribution<float>(l,h)), 
-                                                            low(l),
-                                                            high(h)
+        Node(): low(-1), high(-1), curr(-1) {};
+        Node(float l, float h, uint32_t seed): gen(std::mt19937(seed)),
+                                               dis(std::uniform_real_distribution<float>(l,h)), 
+                                               low(l),
+                                               high(h)
         {
             update_price();
         };
         void update_price(){
             curr = dis(gen);
         };
-        uint32_t get_goal(){return goal;};
         float get_price(){return curr;};
         std::vector<float> get_price_range(){return {low,high};};
     };
 
-    // Adjacency list storing paths and corresponding flight price range
-    std::unordered_map<int, std::vector<Node*>> graph;
+    // Adjacency matrix storing links and corresponding flight price range
+    std::vector<std::vector<Node*>> graph;
     
     // Locations of map points 
     PointCloud pc;
@@ -73,12 +74,14 @@ public:
 
     // read map from file
     Map(std::string filename);
-    
-    void print_vertices();
 
+    void print_vertices();
+    
     void print_edges();
 
     void save_map(std::string filename);
+
+    void save_current_price(std::string filename);
     
     void update_price();
     
@@ -87,3 +90,5 @@ public:
     friend class Map_generator;
     friend class Solver;
 };
+
+#endif

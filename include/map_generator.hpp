@@ -1,7 +1,12 @@
 // Author: Xi Lin
+#ifndef MAP_GENERATOR_H
+#define MAP_GENERATOR_H
+
 #include "map.hpp"
+#include "nanoflann.hpp"
 #include <fstream>
 #include <random>
+#include <cmath>
 
 class Map_generator{
 private:
@@ -13,7 +18,7 @@ private:
     float height = 1000;
 
     // number of points
-    uint32_t num_points = 10;
+    int num_points = 15;
 
     // minimum distance between two points 
     float min_dis = 100;
@@ -39,3 +44,5 @@ public:
 
     void create_map();
 };
+
+#endif

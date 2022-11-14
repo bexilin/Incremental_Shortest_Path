@@ -4,4 +4,8 @@ Made the general implementation plan, wrote the c++ header files that define dat
 
 # Week 2 (10/31-11/6)
 
-wrote class methods for the data generator and map builder, and a CMakelist.txt file to organize the project code structure.
+Wrote class methods for the data generator and map builder, and a CMakelist.txt file to organize the project code structure.
+
+# Week 3 (11/7-11/13)
+
+Implement Floyd Warshall solver, and wrote a python script to visualize the map and shortest path solutions.

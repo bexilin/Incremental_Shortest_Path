@@ -19,6 +19,8 @@ Map_generator::Map_generator() {
 };
 
 void Map_generator::create_map() {
+    std::cout << "Creating a map with " << num_points << " cities" << std::endl;
+
     // Use KD Tree to identify the closest neighbour
     using kd_tree = nanoflann::KDTreeSingleIndexDynamicAdaptor<
             nanoflann::L2_Simple_Adaptor<float, PointCloud>,
@@ -57,18 +59,20 @@ void Map_generator::create_map() {
     }
 
     // Create random links between map points
+    std::vector<Map::Node*> row(num_points,nullptr);
+    m.graph = std::vector<std::vector<Map::Node*>>(num_points,row);
     for(uint32_t i = 0; i < num_points-1; i++){
         for(uint32_t j = i+1; j < num_points; j++){
             if(binomial_dis(gen) == 0) continue;
-            if(!m.graph.count(i)) m.graph[i] = std::vector<Map::Node*>();
-            if(!m.graph.count(j)) m.graph[j] = std::vector<Map::Node*>();
 
             float base_price = distance(m.pc.points[i],m.pc.points[j]) * p;
             float low = base_price*(1-r);
             float high = base_price*(1+r);
             
-            m.graph[i].push_back(new Map::Node(j,low,high,m.seed++));
-            m.graph[j].push_back(new Map::Node(i,low,high,m.seed++));
+            m.graph[i][j] = new Map::Node(low,high,m.seed++);
+            m.graph[j][i] = new Map::Node(low,high,m.seed++);
         }
     }
+
+    std::cout << "Finished!" << std::endl << std::endl;
 };

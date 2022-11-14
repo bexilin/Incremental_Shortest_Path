@@ -11,10 +11,7 @@ Map::Map(std::string filename){
         int from, to;
         float low, high;
         l >> from >> to >> low >> high;
-        if(!graph.count(from)){
-            graph[from] = std::vector<Node*>();
-        }
-        graph[from].push_back(new Node(to,low,high,seed++));
+        graph[from][to] = new Node(low,high,seed++);
     }
     file.close();
 };
@@ -31,11 +28,13 @@ void Map::print_vertices(){
 void Map::print_edges(){
     std::cout << "Print edges" << std::endl;
     for(int i = 0; i < graph.size(); i++){
-        for(Node* n:graph[i]){
-            std::cout << "Edge: " << i << "->" << n->get_goal() << " ";
-            std::vector<float> result = n->get_price_range();
+        for(int j = 0; j < graph.size(); j++){
+            std::cout << "Edge: " << i << "->" << j << " ";
+            Node* node = graph[i][j];
+            if(node == nullptr) continue;
+            std::vector<float> result = node->get_price_range();
             std::cout << "Price range: [" << result[0] << "," << result[1] << "] "; 
-            std::cout << "Current price: " << n->get_price() << std::endl;
+            std::cout << "Current price: " << node->get_price() << std::endl;
         }
     }
     std::cout << std::endl;
@@ -60,10 +59,12 @@ void Map::save_map(std::string filename){
     line = "Edges:\n";
     file << line;
     for(int i = 0; i < graph.size(); i++){
-        for(Node* n:graph[i]){
+        for(int j = 0; j < graph.size(); j++){
             line.clear();
-            std::vector<float> result = n->get_price_range();
-            line += std::to_string(i) + " " + std::to_string(n->get_goal()) \
+            Node* node = graph[i][j];
+            if(node == nullptr) continue;
+            std::vector<float> result = node->get_price_range();
+            line += std::to_string(i) + " " + std::to_string(j) \
                  + " " + std::to_string(result[0]) + " " + std::to_string(result[1]);
             file << line;
             file << "\n";
@@ -72,9 +73,34 @@ void Map::save_map(std::string filename){
     file.close();
 };
 
+void Map::save_current_price(std::string filename){
+    std::ofstream file;
+    file.open(filename);
+    if(!file) throw std::runtime_error("Can not open the price file.");
+    
+    std::string line;
+    float price;
+    float float_max = std::numeric_limits<float>::max();
+    for(int i = 0; i < graph.size(); i++){
+        for(int j = 0; j < graph.size(); j++){
+            Node* node = graph[i][j];
+            if(node == nullptr) price = float_max;
+            else price = node->get_price();
+            line += std::to_string(price);
+            if(j < graph.size()-1) line += " ";
+        }
+        file << line;
+        file << "\n";
+        line.clear();
+    }
+    file.close();
+};
+
 void Map::update_price(){
-    for(auto edge:graph){
-        for(auto node:edge.second){
+    for(int i = 0; i < graph.size(); i++){
+        for(int j = 0; j < graph.size(); j++){
+            Node* node = graph[i][j];
+            if(node == nullptr) continue;
             node->update_price();
         }
     }
