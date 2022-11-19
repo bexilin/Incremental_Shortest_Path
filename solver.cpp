@@ -93,3 +93,22 @@ void Floyd_Warshall::solve(){
 
     std::cout << "Finished!" << std::endl << std::endl; 
 };
+
+void Incremental::update_affected_sources(int from, int to){
+    std::unordered_set<int> visited;
+    
+};
+
+void Incremental::incremental_APSP(){
+
+};
+
+void Incremental::solve(){
+    std::cout << "Solving with incremental algorithm" << std::endl;
+
+    update_price_map();
+    reset_path_map();
+
+    update_affected_sources();
+    incremental_APSP(); 
+};

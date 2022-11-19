@@ -3,6 +3,7 @@
 #define SOLVER_H
 
 #include "map.hpp"
+#include <unordered_set>
 
 class Solver{
 protected:
@@ -25,7 +26,13 @@ public:
 };
 
 class Incremental: public Solver{
+private:
+    std::vector<int> affected_sources;
+    void update_affected_sources(int from, int to);
+    void incremental_APSP();
+public:
     Incremental(const Map& m): Solver(m) {};
+    void solve();
 };
 
 #endif

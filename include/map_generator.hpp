@@ -14,11 +14,11 @@ private:
     uint32_t seed = 0;
 
     // map dimensions
-    float width = 1000;
-    float height = 1000;
+    float width = 10000;
+    float height = 10000;
 
     // number of points
-    int num_points = 15;
+    int num_points = 100;
 
     // minimum distance between two points 
     float min_dis = 100;
@@ -30,7 +30,7 @@ private:
     float r = 0.5;
 
     // probability of a link between two points
-    float p_l = 0.3; 
+    float p_l = 0.1; 
 
     // PRNG for point locations and links
     std::mt19937 gen;
