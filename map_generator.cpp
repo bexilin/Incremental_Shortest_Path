@@ -86,12 +86,14 @@ void Map_generator::insert_new_edges(){
     m.most_recent_new_edges.clear();
 
     // number of newly created edges
-    std::uniform_int_distribution<int> num_dis(1,std::min(num_new_edge,int(m.potential_edges.size())));
-    int num = num_dis(gen);
+    // std::uniform_int_distribution<int> num_dis(1,std::min(num_new_edge,int(m.potential_edges.size())));
+    // int num = num_dis(gen);
+    // Only one edge inserted each time
+    int num = 1;
 
     int pc_num = m.map_points_num();
     for(int k = 0; k < num; k++){
-        std::uniform_real_distribution<int> idx_dis(0,int(m.potential_edges.size()-1));
+        std::uniform_int_distribution<int> idx_dis(0,int(m.potential_edges.size()-1));
         int rand_idx = idx_dis(gen);
         int edge_idx = m.potential_edges[rand_idx];
         m.potential_edges.erase(m.potential_edges.begin()+rand_idx);
@@ -99,7 +101,7 @@ void Map_generator::insert_new_edges(){
         int i = edge_idx / pc_num, j = edge_idx % pc_num;
         if(m.graph[i][j] != nullptr) 
             throw std::runtime_error("Edge "+std::to_string(i)+"->"+std::to_string(j)+" already exists!");
-        
+
         float base_price = distance(m.pc.points[i],m.pc.points[j]) * p;
         float low = base_price*(1-r);
         float high = base_price*(1+r);
@@ -109,5 +111,7 @@ void Map_generator::insert_new_edges(){
 
         m.most_recent_new_edges.push_back(i*pc_num+j);
         m.most_recent_new_edges.push_back(j*pc_num+i);
+
+        std::cout << "Edges " << i << " <-> " << j << " created!" << std::endl;
     }
 };

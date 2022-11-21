@@ -76,7 +76,7 @@ void Solver::save_path_map(std::string filename){
     file.close();
 };
 
-void Floyd_Warshall::solve(){
+void Floyd_Warshall::fw_solve(){
     std::cout << "Solving with Floyd Warshall algorithm" << std::endl; 
     
     update_price_map();
@@ -129,7 +129,7 @@ void Incremental::update_affected_sources(int new_edge){
     }
 };
 
-void Incremental::incremental_APSP(int source, int new_edge){
+void Incremental::incremental_APSP(int new_edge){
     int pc_num = m->map_points_num();
     int u = new_edge / pc_num, v = new_edge % pc_num;
     Map::Node* node = m->graph[u][v];
@@ -150,6 +150,11 @@ void Incremental::incremental_APSP(int source, int new_edge){
             for(auto x:affected_sources[P[y]]){
                 if(price_map[x][y] > price_map[x][u] + w_uv + price_map[v][y]){
                     price_map[x][y] = price_map[x][u] + w_uv + price_map[v][y];
+                    
+                    // update shortest path
+                    if(x != u) path_map[x][y] = path_map[x][u];
+                    else path_map[x][y] = v;
+
                     if(y != v){
                         if(!affected_sources.count(y)) affected_sources = {};
                         affected_sources[y].push_back(x);
@@ -172,12 +177,13 @@ void Incremental::incremental_APSP(int source, int new_edge){
     }
 };
 
-void Incremental::solve(){
+void Incremental::incremental_solve(){
     std::cout << "Solving with incremental algorithm" << std::endl;
 
-    update_price_map();
-    reset_path_map();
-
-    update_affected_sources();
-    incremental_APSP(); 
+    for(auto new_edge:m->most_recent_new_edges){
+        update_affected_sources(new_edge);
+        incremental_APSP(new_edge);
+    }
+    
+    std::cout << "Finished!" << std::endl << std::endl;
 };
