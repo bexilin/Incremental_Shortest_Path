@@ -28,7 +28,7 @@ public:
 
 class Incremental: public Solver{
 private:
-    std::vector<int> affected_sources;
+    std::unordered_map<int,std::vector<int>> affected_sources;
     void update_affected_sources(int new_edge);
     void incremental_APSP(int source, int new_edge);
 public:

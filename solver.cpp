@@ -15,6 +15,10 @@ void Solver::update_price_map(){
     float float_max = std::numeric_limits<float>::max();
     for(int i = 0; i < price_map.size(); i++){
         for(int j = 0; j < price_map.size(); j++){
+            if(i == j){
+                price_map[i][j] == 0;
+                continue;
+            } 
             Map::Node* node = m->graph[i][j];
             if(node == nullptr){
                 price_map[i][j] = float_max;
@@ -103,22 +107,22 @@ void Incremental::update_affected_sources(int new_edge){
     float w_uv = node->get_price();
     if(price_map[u][v] > w_uv){
         std::unordered_set<int> visited;
-        std::queue<int> q;
-        q.push(u);
+        std::queue<int> Q;
+        Q.push(u);
         visited.insert(u);
-        affected_sources.push_back(u);
-        while(!q.empty()){
-            int x = q.front();
-            q.pop();
+        affected_sources[v] = {u};
+        while(!Q.empty()){
+            int x = Q.front();
+            Q.pop();
             for(int z = 0; z < pc_num; z++){
                 if(z == x) continue;
                 if(m->graph[z][x] == nullptr) continue;
                 
                 float new_zv = price_map[z][u] + w_uv;
                 if(!visited.count(z) && price_map[z][v] > new_zv){
-                    q.push(z);
+                    Q.push(z);
                     visited.insert(z);
-                    affected_sources.push_back(z);
+                    affected_sources[v].push_back(z);
                 }
             }
         }
@@ -131,6 +135,41 @@ void Incremental::incremental_APSP(int source, int new_edge){
     Map::Node* node = m->graph[u][v];
     if(node == nullptr) throw std::runtime_error("new edge not exist!");
     float w_uv = node->get_price();
+    if(price_map[u][v] > w_uv){
+        price_map[u][v] = w_uv;
+        std::queue<int> Q;
+        Q.push(v);
+        std::unordered_map<int,int> P;
+        P[v]=v;
+        std::unordered_set<int> visited;
+        visited.insert(v);
+        while(!Q.empty()){
+            int y = Q.front();
+            Q.pop();
+
+            for(auto x:affected_sources[P[y]]){
+                if(price_map[x][y] > price_map[x][u] + w_uv + price_map[v][y]){
+                    price_map[x][y] = price_map[x][u] + w_uv + price_map[v][y];
+                    if(y != v){
+                        if(!affected_sources.count(y)) affected_sources = {};
+                        affected_sources[y].push_back(x);
+                    }
+                }
+            }
+
+            for(int w = 0; w < pc_num; w++){
+                if(w == y) continue;
+                if(m->graph[y][w] == nullptr) continue;
+                if(!visited.count(w) && price_map[u][w] > w_uv + price_map[v][w]
+                   && price_map[v][w] == price_map[v][y] + price_map[y][w])
+                {
+                    Q.push(w);
+                    visited.insert(w);
+                    P[w] = y;
+                }
+            }
+        }
+    }
 };
 
 void Incremental::solve(){
