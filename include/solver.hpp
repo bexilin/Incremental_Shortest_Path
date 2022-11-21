@@ -4,6 +4,7 @@
 
 #include "map.hpp"
 #include <unordered_set>
+#include <queue>
 
 class Solver{
 protected:
@@ -28,8 +29,8 @@ public:
 class Incremental: public Solver{
 private:
     std::vector<int> affected_sources;
-    void update_affected_sources(int from, int to);
-    void incremental_APSP();
+    void update_affected_sources(int new_edge);
+    void incremental_APSP(int source, int new_edge);
 public:
     Incremental(const Map& m): Solver(m) {};
     void solve();

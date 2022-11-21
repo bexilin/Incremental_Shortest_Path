@@ -4,12 +4,14 @@
 
 #include <string>
 #include <unordered_map>
+#include <unordered_set>
 #include <vector>
 #include <random>
 #include <fstream>
 #include <sstream>
 #include <iostream>
 #include <limits>
+#include <cassert>
 
 struct PointCloud{
     struct Point
@@ -69,11 +71,20 @@ protected:
     
     // Locations of map points 
     PointCloud pc;
+
+    // List of pairs of map points without edge
+    std::vector<int> potential_edges;
+
+    // List of indices of most recently created edges
+    std::vector<int> most_recent_new_edges;
+
 public:
     Map() {};
 
     // read map from file
     Map(std::string filename);
+
+    int map_points_num() const;
 
     void print_vertices();
     
@@ -89,6 +100,8 @@ public:
 
     friend class Map_generator;
     friend class Solver;
+    friend class Floyd_Warshall;
+    friend class Incremental;
 };
 
 #endif

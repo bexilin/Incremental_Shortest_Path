@@ -11,7 +11,7 @@ Solver::Solver(const Map& map){
     path_map = std::vector<std::vector<int>>(num,row_2);
 };
 
-void Solver::update_price_map(){
+void Solver::update_price_map(){    
     float float_max = std::numeric_limits<float>::max();
     for(int i = 0; i < price_map.size(); i++){
         for(int j = 0; j < price_map.size(); j++){
@@ -19,7 +19,7 @@ void Solver::update_price_map(){
             if(node == nullptr){
                 price_map[i][j] = float_max;
             }
-            else price_map[i][j] = node->get_price();
+            else price_map[i][j] = node->get_price(); 
         }
     }
 };
@@ -94,13 +94,43 @@ void Floyd_Warshall::solve(){
     std::cout << "Finished!" << std::endl << std::endl; 
 };
 
-void Incremental::update_affected_sources(int from, int to){
-    std::unordered_set<int> visited;
-    
+void Incremental::update_affected_sources(int new_edge){
+    affected_sources.clear();
+    int pc_num = m->map_points_num();
+    int u = new_edge / pc_num, v = new_edge % pc_num;
+    Map::Node* node = m->graph[u][v];
+    if(node == nullptr) throw std::runtime_error("new edge not exist!");
+    float w_uv = node->get_price();
+    if(price_map[u][v] > w_uv){
+        std::unordered_set<int> visited;
+        std::queue<int> q;
+        q.push(u);
+        visited.insert(u);
+        affected_sources.push_back(u);
+        while(!q.empty()){
+            int x = q.front();
+            q.pop();
+            for(int z = 0; z < pc_num; z++){
+                if(z == x) continue;
+                if(m->graph[z][x] == nullptr) continue;
+                
+                float new_zv = price_map[z][u] + w_uv;
+                if(!visited.count(z) && price_map[z][v] > new_zv){
+                    q.push(z);
+                    visited.insert(z);
+                    affected_sources.push_back(z);
+                }
+            }
+        }
+    }
 };
 
-void Incremental::incremental_APSP(){
-
+void Incremental::incremental_APSP(int source, int new_edge){
+    int pc_num = m->map_points_num();
+    int u = new_edge / pc_num, v = new_edge % pc_num;
+    Map::Node* node = m->graph[u][v];
+    if(node == nullptr) throw std::runtime_error("new edge not exist!");
+    float w_uv = node->get_price();
 };
 
 void Incremental::solve(){

@@ -16,6 +16,10 @@ Map::Map(std::string filename){
     file.close();
 };
 
+int Map::map_points_num() const{
+    return int(pc.points.size());
+};
+
 void Map::print_vertices(){
     std::cout << "Print vertices" << std::endl;
     for(int i=0; i < graph.size(); i++){

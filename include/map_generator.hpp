@@ -23,6 +23,9 @@ private:
     // minimum distance between two points 
     float min_dis = 100;
 
+    // Max number of newly created edges each time after initial map generation 
+    int num_new_edge = 3; 
+
     // base price factor
     float p = 1;
 
@@ -43,6 +46,8 @@ public:
     Map_generator();
 
     void create_map();
+
+    void insert_new_edges();
 };
 
 #endif
