@@ -10,9 +10,9 @@ class Solver{
 protected:
     std::vector<std::vector<float>> price_map;
     std::vector<std::vector<int>> path_map;
-    const Map* m;
+    Map* m;
 public:
-    Solver(const Map& map);
+    Solver(Map& map);
     void update_price_map();
     void reset_path_map();
     void save_price_map(std::string filename);
@@ -21,7 +21,7 @@ public:
 
 class Floyd_Warshall: public Solver{
 public:
-    Floyd_Warshall(const Map& m): Solver(m) {};
+    Floyd_Warshall(Map& m): Solver(m) {};
     void fw_solve();
 };
 
@@ -31,7 +31,7 @@ private:
     void update_affected_sources(int new_edge);
     void incremental_APSP(int new_edge);
 public:
-    Incremental(const Map& m): Floyd_Warshall(m) {}; 
+    Incremental(Map& m): Floyd_Warshall(m) {}; 
     void incremental_solve();
 };
 

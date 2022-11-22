@@ -76,7 +76,13 @@ protected:
     std::vector<int> potential_edges;
 
     // List of indices of most recently created edges
-    std::vector<int> most_recent_new_edges;
+    std::vector<std::pair<int,Node*>> most_recent_new_edges;
+
+    void insert_all_new_edges();
+
+    void insert_new_edge(std::pair<int,Node*>&);
+
+    void clear_all_new_edges();
 
 public:
     Map() {};
@@ -95,8 +101,6 @@ public:
     void save_current_price(std::string filename);
     
     void update_price();
-    
-    void draw_map();
 
     friend class Map_generator;
     friend class Solver;

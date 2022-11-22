@@ -109,3 +109,20 @@ void Map::update_price(){
         }
     }
 };
+
+void Map::insert_all_new_edges(){
+    for(auto edge:most_recent_new_edges){
+        insert_new_edge(edge);
+    }
+};
+
+void Map::insert_new_edge(std::pair<int,Node*>& edge){
+    int pc_num = map_points_num();
+    int i = edge.first / pc_num;
+    int j = edge.first % pc_num;
+    graph[i][j] = edge.second;
+};
+
+void Map::clear_all_new_edges(){
+    most_recent_new_edges.clear();
+}

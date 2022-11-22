@@ -1,7 +1,7 @@
 // Author: Xi Lin
 #include "solver.hpp"
 
-Solver::Solver(const Map& map){
+Solver::Solver(Map& map){
     m = &map;
     int num = m->pc.points.size();
     float float_max = std::numeric_limits<float>::max();
@@ -16,7 +16,7 @@ void Solver::update_price_map(){
     for(int i = 0; i < price_map.size(); i++){
         for(int j = 0; j < price_map.size(); j++){
             if(i == j){
-                price_map[i][j] == 0;
+                price_map[i][j] = 0;
                 continue;
             } 
             Map::Node* node = m->graph[i][j];
@@ -77,7 +77,9 @@ void Solver::save_path_map(std::string filename){
 };
 
 void Floyd_Warshall::fw_solve(){
-    std::cout << "Solving with Floyd Warshall algorithm" << std::endl; 
+    std::cout << "Solving with Floyd Warshall algorithm" << std::endl;
+
+    // m->insert_all_new_edges();
     
     update_price_map();
     reset_path_map();
@@ -127,6 +129,8 @@ void Incremental::update_affected_sources(int new_edge){
             }
         }
     }
+    // for(auto s:affected_sources[v]) std::cout << s << std::endl;
+    // std::cout << std::endl;
 };
 
 void Incremental::incremental_APSP(int new_edge){
@@ -136,7 +140,6 @@ void Incremental::incremental_APSP(int new_edge){
     if(node == nullptr) throw std::runtime_error("new edge not exist!");
     float w_uv = node->get_price();
     if(price_map[u][v] > w_uv){
-        price_map[u][v] = w_uv;
         std::queue<int> Q;
         Q.push(v);
         std::unordered_map<int,int> P;
@@ -145,9 +148,16 @@ void Incremental::incremental_APSP(int new_edge){
         visited.insert(v);
         while(!Q.empty()){
             int y = Q.front();
+            // std::cout << "y is " << y << std::endl;
             Q.pop();
 
             for(auto x:affected_sources[P[y]]){
+                // std::cout << "x is " << x << std::endl;
+                // std::cout << price_map[x][y] << std::endl;
+                // std::cout << price_map[x][u] << std::endl;
+                // std::cout << w_uv << std::endl;
+                // std::cout << price_map[v][y] << std::endl;
+                // std::cout << std::endl;
                 if(price_map[x][y] > price_map[x][u] + w_uv + price_map[v][y]){
                     price_map[x][y] = price_map[x][u] + w_uv + price_map[v][y];
                     
@@ -156,7 +166,8 @@ void Incremental::incremental_APSP(int new_edge){
                     else path_map[x][y] = v;
 
                     if(y != v){
-                        if(!affected_sources.count(y)) affected_sources = {};
+                        if(!affected_sources.count(y)) 
+                            affected_sources[y] = std::vector<int>();
                         affected_sources[y].push_back(x);
                     }
                 }
@@ -181,8 +192,9 @@ void Incremental::incremental_solve(){
     std::cout << "Solving with incremental algorithm" << std::endl;
 
     for(auto new_edge:m->most_recent_new_edges){
-        update_affected_sources(new_edge);
-        incremental_APSP(new_edge);
+        m->insert_new_edge(new_edge);
+        update_affected_sources(new_edge.first);
+        incremental_APSP(new_edge.first);
     }
     
     std::cout << "Finished!" << std::endl << std::endl;

@@ -80,10 +80,11 @@ void Map_generator::create_map() {
     std::cout << "Finished!" << std::endl << std::endl;
 };
 
-void Map_generator::insert_new_edges(){
+void Map_generator::create_new_edges(){
     if(m.potential_edges.empty()) throw std::runtime_error("Potential_edges is empty!");
     
-    m.most_recent_new_edges.clear();
+    // Clear previously generated edges
+    m.clear_all_new_edges();
 
     // number of newly created edges
     // std::uniform_int_distribution<int> num_dis(1,std::min(num_new_edge,int(m.potential_edges.size())));
@@ -106,11 +107,11 @@ void Map_generator::insert_new_edges(){
         float low = base_price*(1-r);
         float high = base_price*(1+r);
         
-        m.graph[i][j] = new Map::Node(low,high,m.seed++);
-        m.graph[j][i] = new Map::Node(low,high,m.seed++);
+        // m.graph[i][j] = new Map::Node(low,high,m.seed++);
+        // m.graph[j][i] = new Map::Node(low,high,m.seed++);
 
-        m.most_recent_new_edges.push_back(i*pc_num+j);
-        m.most_recent_new_edges.push_back(j*pc_num+i);
+        m.most_recent_new_edges.push_back({i*pc_num+j,new Map::Node(low,high,m.seed++)});
+        m.most_recent_new_edges.push_back({j*pc_num+i,new Map::Node(low,high,m.seed++)});
 
         std::cout << "Edges " << i << " <-> " << j << " created!" << std::endl;
     }
