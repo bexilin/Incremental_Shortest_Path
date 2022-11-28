@@ -13,3 +13,7 @@ Implement Floyd Warshall solver, and wrote a python script to visualize the map 
 # Week 4 (11/14-11/20)
 
 Implement an incremental solver from paper (Ramalingam, Ganesan, and Thomas Reps. "On the computational complexity of dynamic graph problems." Theoretical Computer Science 158.1-2 (1996): 233-277.), revise data generator to allow change of flight price in part of the map
+
+# Week 5 (11/21-11/27)
+
+Perform experiments to compare the performance of Floyd Warshall solver and the incremental solver on maps of different sizes.  

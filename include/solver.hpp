@@ -5,11 +5,13 @@
 #include "map.hpp"
 #include <unordered_set>
 #include <queue>
+#include <chrono>
 
 class Solver{
 protected:
     std::vector<std::vector<float>> price_map;
     std::vector<std::vector<int>> path_map;
+    std::vector<float> solution_time;
     Map* m;
 public:
     Solver(Map& map);

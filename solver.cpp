@@ -80,6 +80,8 @@ void Floyd_Warshall::fw_solve(){
     std::cout << "Solving with Floyd Warshall algorithm" << std::endl;
 
     // m->insert_all_new_edges();
+
+    auto start = std::chrono::steady_clock::now();
     
     update_price_map();
     reset_path_map();
@@ -97,7 +99,11 @@ void Floyd_Warshall::fw_solve(){
         }
     }
 
-    std::cout << "Finished!" << std::endl << std::endl; 
+    auto end = std::chrono::steady_clock::now();
+    std::chrono::duration<float> diff = end - start;
+    solution_time.push_back(diff.count());
+
+    std::cout << "Finished in " << std::to_string(diff.count()) << " s" << std::endl << std::endl; 
 };
 
 void Incremental::update_affected_sources(int new_edge){
@@ -191,11 +197,15 @@ void Incremental::incremental_APSP(int new_edge){
 void Incremental::incremental_solve(){
     std::cout << "Solving with incremental algorithm" << std::endl;
 
+    auto start = std::chrono::steady_clock::now();
     for(auto new_edge:m->most_recent_new_edges){
         m->insert_new_edge(new_edge);
         update_affected_sources(new_edge.first);
         incremental_APSP(new_edge.first);
     }
+    auto end = std::chrono::steady_clock::now();
+    std::chrono::duration<float> diff = end - start;
+    solution_time.push_back(diff.count());
     
-    std::cout << "Finished!" << std::endl << std::endl;
+    std::cout << "Finished in " << std::to_string(diff.count()) << " s" << std::endl << std::endl;
 };
