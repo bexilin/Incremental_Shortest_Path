@@ -24,7 +24,7 @@ private:
     float min_dis = 20;
 
     // Number of newly created edges each time after initial map generation 
-    int num_new_edge = 1; 
+    int num_new_edge = 5; 
 
     // base price factor
     float p = 1;

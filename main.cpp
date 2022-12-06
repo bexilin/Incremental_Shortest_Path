@@ -1,6 +1,7 @@
 // Author: Xi Lin
 #include <iomanip>
 #include <sstream>
+#include <sys/stat.h>
 #include "map_generator.hpp"
 #include "solver.hpp"
 
@@ -16,6 +17,16 @@ void experiment(int num_points, float portion){
     std::cout << std::endl;
 
     std::string dir = "experiment_data/n_" + std::to_string(num_points) + "_p_" + p_string + "/";
+
+    if (mkdir(dir.c_str(), S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH) == -1)
+    {
+        if( errno == EEXIST ) {
+            std::cout << "Warning: data directory already exists!" << std::endl;
+        } 
+        else {
+            throw std::runtime_error("Could not create data directory");
+        }
+    }
 
     Map_generator g(num_points,portion);
     g.create_map();
@@ -49,8 +60,8 @@ void experiment(int num_points, float portion){
 };
 
 int main(){
-    std::vector<int> num_points = {100};
-    std::vector<float> portion = {0.2};
+    std::vector<int> num_points = {5000};
+    std::vector<float> portion = {0.2,0.5,0.8};
     for(auto num:num_points){
         for(auto p:portion){
             experiment(num,p);

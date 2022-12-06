@@ -16,4 +16,4 @@ Implement an incremental solver from paper (Ramalingam, Ganesan, and Thomas Reps
 
 # Week 5 (11/21-11/27)
 
-Perform experiments to compare the performance of Floyd Warshall solver and the incremental solver on maps of different sizes.  
+Perform experiments to compare the performance of Floyd Warshall solver and the incremental solver on maps of different sizes, and write experiment section in the report 
