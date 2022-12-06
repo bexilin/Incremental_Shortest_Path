@@ -1,4 +1,5 @@
 project(incremental_shortest_path)
+set(CMAKE_BUILD_TYPE Debug)
 add_subdirectory(${PROJECT_SOURCE_DIR}/thirdparty/nanoflann)
 include_directories(${PROJECT_SOURCE_DIR}/include 
                     ${PROJECT_SOURCE_DIR}/thirdparty/nanoflann/include)

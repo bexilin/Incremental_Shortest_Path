@@ -166,6 +166,9 @@ void Incremental::incremental_APSP(int new_edge){
                 // std::cout << std::endl;
                 if(price_map[x][y] > price_map[x][u] + w_uv + price_map[v][y]){
                     price_map[x][y] = price_map[x][u] + w_uv + price_map[v][y];
+
+                    // updated affected pairs
+                    affected_pairs.push_back({x,y});
                     
                     // update shortest path
                     if(x != u) path_map[x][y] = path_map[x][u];
@@ -183,7 +186,7 @@ void Incremental::incremental_APSP(int new_edge){
                 if(w == y) continue;
                 if(m->graph[y][w] == nullptr) continue;
                 if(!visited.count(w) && price_map[u][w] > w_uv + price_map[v][w]
-                   && price_map[v][w] == price_map[v][y] + price_map[y][w])
+                   && std::abs(price_map[v][w] - price_map[v][y] - price_map[y][w]) < 1e-3)
                 {
                     Q.push(w);
                     visited.insert(w);
@@ -195,6 +198,7 @@ void Incremental::incremental_APSP(int new_edge){
 };
 
 void Incremental::incremental_solve(){
+    affected_pairs.clear();
     std::cout << "Solving with incremental algorithm" << std::endl;
 
     auto start = std::chrono::steady_clock::now();
@@ -208,4 +212,19 @@ void Incremental::incremental_solve(){
     solution_time.push_back(diff.count());
     
     std::cout << "Finished in " << std::to_string(diff.count()) << " s" << std::endl << std::endl;
+};
+
+void Incremental::save_affected_pairs(std::string filename){
+    std::ofstream file;
+    file.open(filename);
+    if(!file) throw std::runtime_error("Can not open the affected pairs file.");
+    
+    std::string line;
+    for(auto pair:affected_pairs){
+        line += std::to_string(pair.first) + " " + std::to_string(pair.second);
+        file << line;
+        file << "\n";
+        line.clear();
+    }
+    file.close();
 };

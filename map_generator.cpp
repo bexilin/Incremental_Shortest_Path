@@ -11,11 +11,20 @@ float distance(PointCloud::Point& a, PointCloud::Point& b){
     return std::sqrt(dx*dx + dy*dy);
 };
 
-Map_generator::Map_generator() {
+Map_generator::Map_generator(int num, float p) {
+    num_points = num;
+
+    width = num_points * min_dis;
+    height = num_points * min_dis;
+    
     gen = std::mt19937(seed);
     uniform_dis_x = std::uniform_real_distribution<float>(0.0,width);
     uniform_dis_y = std::uniform_real_distribution<float>(0.0,height);
-    binomial_dis = std::binomial_distribution<int>(1,p_l);
+    
+    int all_edge_num = (num_points * (num_points-1)) / 2;
+    num_init_edge = all_edge_num * p;
+
+    uniform_dis_edge = std::uniform_int_distribution<>(0,num_points*num_points-1);
 };
 
 void Map_generator::create_map() {
@@ -61,21 +70,46 @@ void Map_generator::create_map() {
     // Create random links between map points
     std::vector<Map::Node*> row(num_points,nullptr);
     m.graph = std::vector<std::vector<Map::Node*>>(num_points,row);
-    for(uint32_t i = 0; i < num_points-1; i++){
-        for(uint32_t j = i+1; j < num_points; j++){
-            if(binomial_dis(gen) == 0){
-                m.potential_edges.push_back(i*num_points+j);
-                continue;
-            } 
 
-            float base_price = distance(m.pc.points[i],m.pc.points[j]) * p;
-            float low = base_price*(1-r);
-            float high = base_price*(1+r);
-            
-            m.graph[i][j] = new Map::Node(low,high,m.seed++);
-            m.graph[j][i] = new Map::Node(low,high,m.seed++);
+    int created_edge = 0;
+    while(created_edge < num_init_edge){
+        int edge = uniform_dis_edge(gen);
+        int i = edge / num_points, j = edge % num_points;
+        
+        if(i == j || m.graph[i][j] != nullptr) continue;
+        
+        float base_price = distance(m.pc.points[i],m.pc.points[j]) * p;
+        float low = base_price*(1-r);
+        float high = base_price*(1+r);
+        
+        m.graph[i][j] = new Map::Node(low,high,m.seed++);
+        m.graph[j][i] = new Map::Node(low,high,m.seed++);
+
+        created_edge++;
+    }
+
+    for(int i = 0; i < num_points-1; i++){
+        for(int j = i+1; j < num_points; j++){
+            if(m.graph[i][j] == nullptr)
+                m.potential_edges.push_back(i*num_points+j);
         }
     }
+
+    // for(uint32_t i = 0; i < num_points-1; i++){
+    //     for(uint32_t j = i+1; j < num_points; j++){
+    //         if(binomial_dis(gen) == 0){
+    //             m.potential_edges.push_back(i*num_points+j);
+    //             continue;
+    //         } 
+
+    //         float base_price = distance(m.pc.points[i],m.pc.points[j]) * p;
+    //         float low = base_price*(1-r);
+    //         float high = base_price*(1+r);
+            
+    //         m.graph[i][j] = new Map::Node(low,high,m.seed++);
+    //         m.graph[j][i] = new Map::Node(low,high,m.seed++);
+    //     }
+    // }
 
     std::cout << "Finished!" << std::endl << std::endl;
 };
@@ -90,7 +124,7 @@ void Map_generator::create_new_edges(){
     // std::uniform_int_distribution<int> num_dis(1,std::min(num_new_edge,int(m.potential_edges.size())));
     // int num = num_dis(gen);
     // Only one edge inserted each time
-    int num = 1;
+    int num = num_new_edge;
 
     int pc_num = m.map_points_num();
     for(int k = 0; k < num; k++){
@@ -115,4 +149,5 @@ void Map_generator::create_new_edges(){
 
         std::cout << "Edges " << i << " <-> " << j << " created!" << std::endl;
     }
+    std::cout << std::endl;
 };

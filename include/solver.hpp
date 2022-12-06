@@ -30,11 +30,13 @@ public:
 class Incremental: public Floyd_Warshall{
 private:
     std::unordered_map<int,std::vector<int>> affected_sources;
+    std::vector<std::pair<int,int>> affected_pairs;
     void update_affected_sources(int new_edge);
     void incremental_APSP(int new_edge);
 public:
     Incremental(Map& m): Floyd_Warshall(m) {}; 
     void incremental_solve();
+    void save_affected_pairs(std::string filename);
 };
 
 #endif
