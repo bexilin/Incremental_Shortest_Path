@@ -68,7 +68,7 @@ void experiment(int num_points, float portion, int num_new_edge, float& t_inc, f
 };
 
 int main(){
-    std::vector<int> num_points = {10,100,1000};
+    std::vector<int> num_points = {10,50,100,500,1000};
     std::vector<float> portion = {0.2,0.5,0.8};
     
     std::string dir = "experiment_data";
