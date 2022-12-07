@@ -16,4 +16,10 @@ Implement an incremental solver from paper (Ramalingam, Ganesan, and Thomas Reps
 
 # Week 5 (11/21-11/27)
 
-Perform experiments to compare the performance of Floyd Warshall solver and the incremental solver on maps of different sizes, and write experiment section in the report 
+Perform experiments to compare the performance of Floyd Warshall solver and the incremental solver on maps of different sizes and different number of newly created edges
+
+# Week 6 (11/28-12/04)
+Improve the GUI for route query given the start and the goal point, and write a script to visualize experiment data  
+
+# Week 7 (12/05-12/11)
+Improve the plots of experiment results, write the final report and make the presentation slides.
