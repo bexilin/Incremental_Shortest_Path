@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 from matplotlib.colors import ListedColormap
 import numpy as np
 import csv
+from plot_map import Map 
 
 def matrix_from_file(num_point,p):
     dir = "n_"+str(num_point)+"_p_"+f"{p:.1f}/"
@@ -46,9 +47,9 @@ if __name__ == "__main__":
     cmap = ListedColormap(['w','b','r'])
     cmap_2 = ListedColormap(['w','grey'])
     fig_1 = plt.figure(figsize=(18,18))
-    fig_2 = plt.figure(figsize=(18,6))
+    fig_2 = plt.figure(figsize=(18,12))
     spec = fig_1.add_gridspec(3,3)
-    spec_2 = fig_2.add_gridspec(1,3)
+    spec_2 = fig_2.add_gridspec(2,3)
     percentage = np.zeros((len(num_points),len(portion)))
     for i in range(5):
         for j in range(3):
@@ -61,19 +62,30 @@ if __name__ == "__main__":
                 ax.set_xticks([])
                 ax.set_yticks([])
                 if i == 0:
-                    ax.set_title("p = "+f"{portion[j]*100:.0f}"+"%",fontsize=15)
+                    ax.set_title("p = "+f"{portion[j]*100:.0f}"+"%",fontsize=20)
                 if j == 0:
-                    ax.set_ylabel("n = "+str(num_points[i]),fontsize=15,rotation=0,labelpad=35)
+                    ax.set_ylabel("n = "+str(num_points[i]),fontsize=20,rotation=0,labelpad=40)
 
             if i == 1:
-                m_2 = matrix_from_file_2(num_points[i],portion[j])
+                # graph plots
+                m = Map('../build/experiment_data/n_'+str(num_points[i])+'_p_'+str(portion[j])+'/map.csv',
+                        '../build/experiment_data/n_'+str(num_points[i])+'_p_'+str(portion[j])+'/current_price.csv')
                 ax = fig_2.add_subplot(spec_2[0,j])
+                m.visualize_topology(ax)
+                ax.set_title("p = "+f"{portion[j]*100:.0f}"+"%",fontsize=20)
+                ax.spines['left'].set_visible(False)
+                ax.spines['right'].set_visible(False)
+                ax.spines['bottom'].set_visible(False)
+                ax.spines['top'].set_visible(False)
+
+                # adjacency matrix plots
+                m_2 = matrix_from_file_2(num_points[i],portion[j])
+                ax = fig_2.add_subplot(spec_2[1,j])
                 ax.matshow(m_2,cmap=cmap_2)
-                ax.set_title("p = "+f"{portion[j]*100:.0f}"+"%",fontsize=15)
                 ax.set_xticks([])
                 ax.set_yticks([])
-                if j == 0:
-                    ax.set_ylabel("n = "+str(num_points[i]),fontsize=15,rotation=0,labelpad=35)
+                # if j == 0:
+                #     ax.set_ylabel("n = "+str(num_points[i]),fontsize=15,rotation=0,labelpad=35)
 
     # incremental solver proportion of affected pairs plot
     fig_3,ax = plt.subplots()
@@ -111,5 +123,8 @@ if __name__ == "__main__":
     ax_2.yaxis.set_tick_params(labelsize=15)
     ax_2.set_title("Computation time of two methods",fontsize=15)
 
-    plt.show()
+    fig_1.savefig("inc_matrices.png",bbox_inches='tight')
+    fig_2.savefig("current_edges.png",bbox_inches='tight')
+    fig_3.savefig("affected_pairs.png",bbox_inches='tight')
+    fig_4.savefig("computation_time.png",bbox_inches='tight')
 

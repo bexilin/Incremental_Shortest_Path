@@ -47,11 +47,11 @@ class Map:
         label = True
         for v in self.vertices:
             if label:
-                ax.scatter(v[1],v[2],s=20,c='b',zorder=3,label='city')
+                ax.scatter(v[1],v[2],s=20,c='r',zorder=3,label='city')
                 label = False
             else:
-                ax.scatter(v[1],v[2],s=20,c='b',zorder=3)
-            ax.text(v[1],v[2],str(v[0]),fontsize=15)
+                ax.scatter(v[1],v[2],s=20,c='r',zorder=3)
+            # ax.text(v[1],v[2],str(v[0]),fontsize=15)
 
         label = True
         for e in self.edges:
@@ -59,19 +59,34 @@ class Map:
             idx_2 = e[1]
             if label:
                 ax.plot([self.vertices[idx_1][1],self.vertices[idx_2][1]], \
-                        [self.vertices[idx_1][2],self.vertices[idx_2][2]],'k',label='airline')
+                        [self.vertices[idx_1][2],self.vertices[idx_2][2]],'k', \
+                        linewidth=0.2, label='airline')
                 label = False
             else:
                 ax.plot([self.vertices[idx_1][1],self.vertices[idx_2][1]], \
-                        [self.vertices[idx_1][2],self.vertices[idx_2][2]],'k')
+                        [self.vertices[idx_1][2],self.vertices[idx_2][2]],'k', \
+                        linewidth=0.2)
 
-    def visualize_path(self,path,ax):
+        ax.set_xticks([])
+        ax.set_yticks([])
+        ax.spines["left"].set_visible(False)
+        ax.spines["top"].set_visible(False)
+        ax.spines["right"].set_visible(False)
+        ax.spines["bottom"].set_visible(False)
+
+    def visualize_path(self,path,ax_graph,ax_route):
         if self.plot_handle != None:
             for h in self.plot_handle:
                 h.remove()
 
         self.plot_handle = []
         label = True
+        
+        h = ax_route.text(0,0,"Route from city "+str(path[0])+" to city "+str(path[-1]),fontsize=20)
+        ax_route.set_ylim([-1.0*(len(path)+1),1.0])
+        self.plot_handle.append(h)
+        total_cost = 0
+        
         for i in range(len(path)-1):
             idx_1 = path[i]
             idx_2 = path[i+1]
@@ -80,14 +95,14 @@ class Map:
             dx = self.vertices[idx_2][1] - x
             dy = self.vertices[idx_2][2] - y
             if label:
-                h = ax.arrow(x,y,dx,dy,color='r',label='path', \
+                h = ax_graph.arrow(x,y,dx,dy,color='b',label='path', \
                              head_width = 40, \
                              head_length = 40, \
                              length_includes_head=True, \
                              zorder=5)
                 label = False
             else:
-                h = ax.arrow(x,y,dx,dy,color='r', \
+                h = ax_graph.arrow(x,y,dx,dy,color='b', \
                              head_width = 40, \
                              head_length = 40, \
                              length_includes_head=True, \
@@ -95,6 +110,24 @@ class Map:
 
             self.plot_handle.append(h)
 
+            # route information
+            step_cost = self.airline_price[idx_1][idx_2]
+            total_cost += step_cost
+            h = ax_route.text(0,-1.0*(i+1),"Step "+str(i+1)+": "+str(idx_1)+"->"\
+                                           +str(idx_2)+"   Price: "+f"{step_cost:.2f}",\
+                                           fontsize=15)
+
+            self.plot_handle.append(h)
+
+        h = ax_route.text(0,-1.0*(len(path)),"Total cost: "+f"{total_cost:.2f}",fontsize=15)
+        self.plot_handle.append(h)
+        
+        ax_route.set_xticks([])
+        ax_route.set_yticks([])
+        ax_route.spines["left"].set_visible(False)
+        ax_route.spines["top"].set_visible(False)
+        ax_route.spines["right"].set_visible(False)
+        ax_route.spines["bottom"].set_visible(False)
 
 class Floyd_Warshall:
 
@@ -123,40 +156,39 @@ class Floyd_Warshall:
             curr = self.path_map[curr][end]
             path.append(curr)
         
-        return path, self.price_map[start][end]
+        return path
 
+class Incrmental(Floyd_Warshall):
+
+    def __init__(self,path_map_file,price_map_file):
+        super().__init__(path_map_file,price_map_file)
+
+    def query(self, start, end):
+        return super().query(start, end)
 
 if __name__ == "__main__":
     
-    plot, ax = plt.subplots()
+    plot = plt.figure(figsize=(12,6))
+    spec = plot.add_gridspec(1,2)
+    ax_graph = plot.add_subplot(spec[0,0])
+    ax_route = plot.add_subplot(spec[0,1])
 
-    m = Map('../build/map.csv','../build/current_price.csv')
+    m = Map('../build/experiment_data/n_50_p_0.2/map.csv',
+            '../build/experiment_data/n_50_p_0.2/current_price.csv')
 
-    fw = Floyd_Warshall('../build/fw_path_map.csv','../build/fw_price_map.csv')
+    fw = Floyd_Warshall('../build/experiment_data/n_50_p_0.2/fw_path_map.csv',
+                        '../build/experiment_data/n_50_p_0.2/fw_price_map.csv')
 
-    m.visualize_topology(ax)
+    m.visualize_topology(ax_graph)
 
     start = 0
-    end = 7
+    end = 47
     
-    path, total_cost = fw.query(start,end)
+    path = fw.query(start,end)
 
-    print("Route from city ",start," to city ",end)
-
-    for i in range(len(path)-1):
-        idx_1 = path[i]
-        idx_2 = path[i+1]
-        step_cost = m.airline_price[idx_1][idx_2]
-        print("Step ",i+1,": ",idx_1,"->",idx_2," price: ",step_cost)
+    m.visualize_path(path,ax_graph,ax_route)
     
-    print("Total cost: ",total_cost)
-
-    m.visualize_path(path,ax)
-    
-    ax.legend()
-    ax.set_aspect("equal")
-    ax.set_title("Map")
-    plt.show()
+    plot.savefig("query_example.png",bbox_inches='tight')
 
 
 
