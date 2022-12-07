@@ -19,6 +19,7 @@ public:
     void reset_path_map();
     void save_price_map(std::string filename);
     void save_path_map(std::string filename);
+    std::vector<float> get_solution_time() {return solution_time;};
 };
 
 class Floyd_Warshall: public Solver{

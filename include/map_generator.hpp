@@ -45,7 +45,7 @@ public:
     
     Map_generator();
 
-    Map_generator(int num, float p);
+    Map_generator(int num, float p, int new_edge);
 
     void create_map();
 

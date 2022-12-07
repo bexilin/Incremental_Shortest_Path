@@ -11,8 +11,9 @@ float distance(PointCloud::Point& a, PointCloud::Point& b){
     return std::sqrt(dx*dx + dy*dy);
 };
 
-Map_generator::Map_generator(int num, float p) {
+Map_generator::Map_generator(int num, float p, int new_edge) {
     num_points = num;
+    num_new_edge = new_edge;
 
     width = num_points * min_dis;
     height = num_points * min_dis;
@@ -125,6 +126,7 @@ void Map_generator::create_new_edges(){
     // int num = num_dis(gen);
     // Only one edge inserted each time
     int num = num_new_edge;
+    std::cout << "Creating " << num_new_edge << " new edges" << std::endl << std::endl;
 
     int pc_num = m.map_points_num();
     for(int k = 0; k < num; k++){
@@ -147,7 +149,7 @@ void Map_generator::create_new_edges(){
         m.most_recent_new_edges.push_back({i*pc_num+j,new Map::Node(low,high,m.seed++)});
         m.most_recent_new_edges.push_back({j*pc_num+i,new Map::Node(low,high,m.seed++)});
 
-        std::cout << "Edges " << i << " <-> " << j << " created!" << std::endl;
+        // std::cout << "Edges " << i << " <-> " << j << " created!" << std::endl;
     }
     std::cout << std::endl;
 };

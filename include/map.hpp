@@ -42,7 +42,7 @@ struct PointCloud{
 class Map{
 protected:
     // Seed for PRNG
-    uint32_t seed = 0;
+    uint32_t seed = 1;
     
     // class that store destination and price range of a path
     class Node{
@@ -98,7 +98,11 @@ public:
 
     void save_map(std::string filename);
 
+    void save_current_edges(std::string filename);
+
     void save_current_price(std::string filename);
+
+    void save_new_edges(std::string filename);
     
     void update_price();
 

@@ -77,6 +77,25 @@ void Map::save_map(std::string filename){
     file.close();
 };
 
+void Map::save_current_edges(std::string filename){
+    std::ofstream file;
+    file.open(filename);
+    if(!file) throw std::runtime_error("Can not open the map file.");
+
+    std::string line;
+    for(int i = 0; i < graph.size(); i++){
+        for(int j = 0; j < graph.size(); j++){
+            Node* node = graph[i][j];
+            if(node == nullptr) continue;
+            line += std::to_string(i) + " " + std::to_string(j);
+            file << line;
+            file << "\n";
+            line.clear();
+        }
+    }
+    file.close();
+}
+
 void Map::save_current_price(std::string filename){
     std::ofstream file;
     file.open(filename);
@@ -93,6 +112,24 @@ void Map::save_current_price(std::string filename){
             line += std::to_string(price);
             if(j < graph.size()-1) line += " ";
         }
+        file << line;
+        file << "\n";
+        line.clear();
+    }
+    file.close();
+};
+
+void Map::save_new_edges(std::string filename){
+    std::ofstream file;
+    file.open(filename);
+    if(!file) throw std::runtime_error("Can not open the new edges file.");
+
+    std::string line;
+    for(auto edge:most_recent_new_edges){
+        int pc_num = map_points_num();
+        int i = edge.first / pc_num;
+        int j = edge.first % pc_num;
+        line += std::to_string(i) + " " + std::to_string(j);
         file << line;
         file << "\n";
         line.clear();
