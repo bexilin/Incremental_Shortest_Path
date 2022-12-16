@@ -4,6 +4,8 @@
 
 This project targets the problem of finding the route with cheapest overall flight price from every city to all other cities in a map (An example is shown in the following figure), with specific focus on the effect of appearance of new airlines on the solution. The problem could be formulated as an All-pair shortest path (APSP) problem, where the graph is consists of a set of vertices representing all cities in the map, and a set of edges representing all available airlines. The Flyod Warshall algorithm [1] and the incremental algorithm from [2] are implemented, and their performances are tested on maps of different sizes.
 
+![Example solution](query_example.png)
+
 ## Project Structure (Only include code files)
     .
     ├── include
@@ -46,5 +48,5 @@ python plot_map.py
 ```
 
 ## References
-[1] Thomas H Cormen, Charles E Leiserson, Ronald L Rivest, and Clifford Stein. Introduction to algorithms. MIT press, 2022
+[1] Thomas H Cormen, Charles E Leiserson, Ronald L Rivest, and Clifford Stein. Introduction to algorithms. MIT press, 2022. \
 [2] Arie Slobbe, Elisabetta Bergamini, and Henning Meyerhenke. Faster incremental all-pairs shortest paths. KIT, 2016.
