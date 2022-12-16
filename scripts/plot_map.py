@@ -176,14 +176,20 @@ if __name__ == "__main__":
     m = Map('../build/experiment_data/n_50_p_0.2/map.csv',
             '../build/experiment_data/n_50_p_0.2/current_price.csv')
 
+    m.visualize_topology(ax_graph)
+
+    ### Example block (Could be changed) ###
+    
+    # Use the solutions of Floyd Warshall solver
     fw = Floyd_Warshall('../build/experiment_data/n_50_p_0.2/fw_path_map.csv',
                         '../build/experiment_data/n_50_p_0.2/fw_price_map.csv')
 
-    m.visualize_topology(ax_graph)
-
+    # Specify the start and goal point
     start = 0
     end = 47
-    
+
+    ### Example block (Could be changed) ###
+
     path = fw.query(start,end)
 
     m.visualize_path(path,ax_graph,ax_route)

@@ -1,19 +1,50 @@
-# This is the repo for Stevens CPE 593 project Incremental Shortest Path
+# Incremental Shortest Path (Stevens CPE 593 project)
 
 ## Introduction
 
-This concept is due to Raghav Daga. If you are given a graph of paths such as current airline flights, you can calculate optimal cost using Floyd-Warshall which is O (V^3). But since paths change in realtime, what if you can come up with an incremental algorithm to compute the new cheapest paths if the data changes? For example, if only a single airfare changed, why should you have to recompute everything?
+This project targets the problem of finding the route with cheapest overall flight price from every city to all other cities in a map (An example is shown in the following figure), with specific focus on the effect of appearance of new airlines on the solution. The problem could be formulated as an All-pair shortest path (APSP) problem, where the graph is consists of a set of vertices representing all cities in the map, and a set of edges representing all available airlines. The Flyod Warshall algorithm [1] and the incremental algorithm from [2] are implemented, and their performances are tested on maps of different sizes.
 
-This project will require you to setup a virtual set of costs. It would be lovely to pull in ticket pricing for airplanes, but that's probably way too hard. If you want, you can try to find a source where you can read in a text file of costs, but I assume you will not be able to find one This means you need to create your own fictitious situation (airfares, trainfares, whatever). Then you solve the cheapest way to get from every point to every other using Floyd-Warshall on your large, fake dataset. Then you devise an algorithm to do it much faster incrementally.
+## Project Structure (Only include code files)
+    .
+    ├── include
+    |   ├── map_generator.hpp   # Declaration of the class that handles map generation process
+    |   ├── map.hpp             # Declaration of the class that manages map data
+    |   ├── solver.hpp          # Declaration of the solver classes 
+    ├── scripts
+    |   ├── plot_data.py        # Visualization of all experimental data
+    |   ├── plot_map.py         # Visualization of query routes 
+    ├── thirdparty              # third party library (only nanoflann)
+    ├── main.cpp                # Definition of the main function that runs all experiments
+    ├── map_generator.cpp       # Definition of methods of the class Map_generator
+    ├── map.cpp                 # Definition of methods of the class Map
+    ├── solver.cpp              # Definition of methods of the class Solver 
+    ├── CMakeLists.txt          
 
-## Implement Plan
+## Requirements
+- Tested on Ubuntu 20.04
+- Python 3.8 (for data visualization)
 
-1. Design the map, the price range of each path (and maybe the viability of a path, such as flight availability?)
+## Result reproduction 
 
-2. Create a data generator that could dynamically vary path costs (and maybe the availability of a path?)
+1. Compilation (Navigate to the root directory)
+```
+mkdir build
+cd build
+cmake ..
+```
 
-3. Write the data structure that (1) maintains a weighted graph, (2) updates the graph according to data generator
+2. Run experiments
+```
+./run_main
+```
 
-4. Implement Floyd-Warshall and test the performance on designed examples
+3. Plot experiment and route query results
+```
+cd ../scripts
+python plot_data.py
+python plot_map.py
+```
 
-5. Implement an incremental algorithm that only recomputes affected paths
+## References
+[1] Thomas H Cormen, Charles E Leiserson, Ronald L Rivest, and Clifford Stein. Introduction to algorithms. MIT press, 2022
+[2] Arie Slobbe, Elisabetta Bergamini, and Henning Meyerhenke. Faster incremental all-pairs shortest paths. KIT, 2016.
