@@ -33,6 +33,7 @@ This project targets the problem of finding the route with cheapest overall flig
 mkdir build
 cd build
 cmake ..
+make
 ```
 
 2. Run experiments
