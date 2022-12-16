@@ -15,7 +15,7 @@ This project targets the problem of finding the route with cheapest overall flig
     ├── scripts
     |   ├── plot_data.py        # Visualization of all experimental data
     |   ├── plot_map.py         # Visualization of query routes 
-    ├── thirdparty              # third party library (only nanoflann)
+    ├── thirdparty              # Third party library (only nanoflann)
     ├── main.cpp                # Definition of the main function that runs all experiments
     ├── map_generator.cpp       # Definition of methods of the class Map_generator
     ├── map.cpp                 # Definition of methods of the class Map
